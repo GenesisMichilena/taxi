@@ -1,14 +1,44 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ["index.html", "./node_modules/flowbite/**/*.js"],
+  content: [
+    "./*.html", 
+    "./*.js",
+  ],
   theme: {
     extend: {
+      // 1. Colores Personalizados (Amarillo Pálido Suave)
       colors: {
-        primary: { "50": "#eff6ff", "100": "#dbeafe", "200": "#bfdbfe", "300": "#93c5fd", "400": "#60a5fa", "500": "#3b82f6", "600": "#2563eb", "700": "#1d4ed8", "800": "#1e40af", "900": "#1e3a8a" }
+        'pale-yellow': '#FFFACD', // Amarillo Pálido (Lemon Chiffon)
+        'accent-yellow': '#FFD700', // Un toque de amarillo más fuerte para acentos (Botón CTA)
+        'dark-contrast': '#1A1A1A', // Negro profundo para el contraste
+      },
+      // 2. Animaciones
+      keyframes: {
+        fadeInDown: {
+          'from': { opacity: 0, transform: 'translateY(-20px)' },
+          'to': { opacity: 1, transform: 'translateY(0)' },
+        },
+        fadeInUp: {
+          'from': { opacity: 0, transform: 'translateY(20px)' },
+          'to': { opacity: 1, transform: 'translateY(0)' },
+        },
+        pulseYellow: {
+          '0%, 100%': { backgroundColor: '#FFEA00' },
+          '50%': { backgroundColor: '#FFFACD' }, // Pulsación entre el pálido y el vibrante
+        },
+        shake: {
+          '0%, 100%': { transform: 'translateX(0)' },
+          '10%, 30%, 50%, 70%, 90%': { transform: 'translateX(-5px)' },
+          '20%, 40%, 60%, 80%': { transform: 'translateX(5px)' },
+        },
+      },
+      animation: {
+        'fade-in-down': 'fadeInDown 0.6s ease-out forwards',
+        'fade-in-up': 'fadeInUp 0.6s ease-out forwards',
+        'pulse-yellow': 'pulseYellow 1s infinite',
+        'shake': 'shake 0.5s ease-in-out',
       }
     },
   },
-  plugins: [
-    require('flowbite/plugin')
-  ],
+  plugins: [],
 }
