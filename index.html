@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TAXI GARANTIZADO - Elegancia y Puntualidad</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
+    <script src="app.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Poppins', sans-serif; }
@@ -316,5 +317,86 @@
             console.log('Aplicación cargada correctamente');
         });
     </script>
+    <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+    import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-database.js";
+
+    // CONFIG FIREBASE
+    const firebaseConfig = {
+        apiKey: "AIzaSyCGbsQCE0cZA237B9eOotyR2rBNm4oMJu0",
+        authDomain: "taxisreservas-924b7.firebaseapp.com",
+        databaseURL: "https://taxisreservas-924b7-default-rtdb.firebaseio.com",
+        projectId: "taxisreservas-924b7",
+        storageBucket: "taxisreservas-924b7.firebasestorage.app",
+        messagingSenderId: "20777262278",
+        appId: "1:20777262278:web:0a95e3e02e1fb3d430cbc7"
+    };
+
+    // INICIALIZAR FIREBASE
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // FORMULARIO
+    const form = document.getElementById("reservationForm");
+    const loadBtn = document.getElementById("loadReservations");
+    const reservationsList = document.getElementById("reservationsList");
+
+    // ✅ GUARDAR EN FIREBASE
+    form.addEventListener("submit", function(e) {
+        e.preventDefault();
+
+        const origin = document.getElementById("origin").value;
+        const destination = document.getElementById("destination").value;
+        const datetime = document.getElementById("datetime").value;
+        const passengers = document.getElementById("passengers").value;
+        const serviceType = document.getElementById("serviceType").value;
+
+        push(ref(db, "reservas"), {
+            origin,
+            destination,
+            datetime,
+            passengers,
+            serviceType,
+            fechaGuardado: new Date().toISOString()
+        }).then(() => {
+            alert("Reserva guardada correctamente ✔");
+            form.reset();
+        }).catch(err => {
+            alert("Error al guardar ❌");
+            console.log(err);
+        });
+    });
+
+    // ✅ MOSTRAR RESERVAS
+    loadBtn.addEventListener("click", () => {
+        onValue(ref(db, "reservas"), (snapshot) => {
+
+            reservationsList.innerHTML = "";
+
+            if (!snapshot.exists()) {
+                reservationsList.innerHTML =
+                    `<p class="text-center text-gray-500">Aún no hay reservas guardadas.</p>`;
+                return;
+            }
+
+            snapshot.forEach(child => {
+                const data = child.val();
+
+                const card = `
+                    <div class="p-6 bg-white border border-gray-300 rounded-lg shadow-lg">
+                        <h3 class="text-xl font-bold text-yellow-600 mb-3">Reserva</h3>
+                        <p><strong>Origen:</strong> ${data.origin}</p>
+                        <p><strong>Destino:</strong> ${data.destination}</p>
+                        <p><strong>Fecha y Hora:</strong> ${data.datetime}</p>
+                        <p><strong>Pasajeros:</strong> ${data.passengers}</p>
+                        <p><strong>Tipo:</strong> ${data.serviceType}</p>
+                    </div>
+                `;
+                
+                reservationsList.innerHTML += card;
+            });
+        });
+    });
+</script>
 </body>
 </html>
